@@ -1,15 +1,13 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-using System;
-using System.Collections.Generic;
-
-namespace BlessedRobotics.PartModules
+namespace KonstructionRobotics.PartModules
 {
     /// <summary>
     /// Add this PartModule to any part that rotates about a fixed axis.
     /// </summary>
     /// <remarks>This is the most common type of robotic part.</remarks>
-    public class BlessedRotator : PartModule
+    public class USIModuleRotator : PartModule
     {
         #region Parent property overrides
         #endregion
@@ -25,7 +23,7 @@ namespace BlessedRobotics.PartModules
         /// <remarks>
         /// This should be established at a reasonable value and then left alone.
         /// </remarks>
-        protected const float BASE_TARGET_VELOCITY = 20f;
+        protected const float BASE_TARGET_VELOCITY = 20.0f;
 
         /// <summary>
         /// A fixed base value used to calculate the torque for <see cref="JointMotor.force"/>.
@@ -39,17 +37,17 @@ namespace BlessedRobotics.PartModules
         /// <summary>
         /// A fixed base value used to set the spring force for <see cref="JointSpring.spring"/>.
         /// </summary>
-        protected const float JOINT_SPRING_FORCE = 1000f;
+        protected const float JOINT_SPRING_FORCE = 1000.0f;
 
         /// <summary>
         /// A fixed base value used to set the spring force for <see cref="JointSpring.damper"/>.
         /// </summary>
-        protected const float JOINT_DAMPER_FORCE = 1000f;
+        protected const float JOINT_DAMPER_FORCE = 1000.0f;
         #endregion
 
         #region Local class variables
         /// <summary>
-        /// This is used by OnUpdate to prevent it from undefinitely searching for a child attach node.
+        /// This is used by OnUpdate to prevent it from indefinitely searching for a child attach node.
         /// </summary>
         protected int _attachChildTimeout = 120;
 
@@ -100,22 +98,22 @@ namespace BlessedRobotics.PartModules
         /// <summary>
         /// Set this in part.cfg to raise or lower the speed value for a part if <see cref="BASE_TARGET_VELOCITY"/> is inadequate.
         /// </summary>
-        [KSPField(isPersistant = false)] public float SpeedMultiplier = 1;
+        [KSPField(isPersistant = false)] public float SpeedMultiplier = 1.0f;
 
         /// <summary>
         /// Set this in part.cfg to raise or lower the torque value for a part if <see cref="BASE_MOTOR_TORQUE"/> is inadequate.
         /// </summary>
-        [KSPField(isPersistant = false)] public float TorqueMultiplier = 1;
+        [KSPField(isPersistant = false)] public float TorqueMultiplier = 1.0f;
 
         // The axis for setting up a HingeJoint that will be used to "lock" the fixed mesh to the root part transform.
-        [KSPField(isPersistant = false)] public float FixedJointAxisX = 0f;
-        [KSPField(isPersistant = false)] public float FixedJointAxisY = 0f;
-        [KSPField(isPersistant = false)] public float FixedJointAxisZ = 1f;
+        [KSPField(isPersistant = false)] public float FixedJointAxisX = 0;
+        [KSPField(isPersistant = false)] public float FixedJointAxisY = 0;
+        [KSPField(isPersistant = false)] public float FixedJointAxisZ = 1;
 
         // The axis for the HingeJoint that the movable mesh will rotate around.
-        [KSPField(isPersistant = false)] public float RotationAxisX = 0f;
-        [KSPField(isPersistant = false)] public float RotationAxisY = 0f;
-        [KSPField(isPersistant = false)] public float RotationAxisZ = 1f;
+        [KSPField(isPersistant = false)] public float RotationAxisX = 0;
+        [KSPField(isPersistant = false)] public float RotationAxisY = 0;
+        [KSPField(isPersistant = false)] public float RotationAxisZ = 1;
 
         // The offset from the origin point of the movable mesh to the location of the attach node.
         // TODO: Determine if these values are actually necessary (i.e. will we be able to just use 0 in every instance?)
@@ -133,8 +131,8 @@ namespace BlessedRobotics.PartModules
         /// See <see cref="UpdateMotor"/> to see the full calculation.
         /// </remarks>
         [KSPField(isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Speed", guiFormat = "N1")]
-        [UI_FloatEdit(minValue = 1, maxValue = 11f, incrementSmall = 0.5f, incrementLarge = 1f, incrementSlide = 0.5f, scene = UI_Scene.All, sigFigs = 1)]
-        public float Speed = 1;
+        [UI_FloatEdit(minValue = 1, maxValue = 11.0f, incrementSmall = 0.5f, incrementLarge = 1.0f, incrementSlide = 0.5f, scene = UI_Scene.All, sigFigs = 1)]
+        public float Speed = 1.0f;
 
         /// <summary>
         /// The amount of force the joint motor will use to attempt to reach target velocity (aka <see cref="Speed"/>).
@@ -144,8 +142,8 @@ namespace BlessedRobotics.PartModules
         /// See <see cref="UpdateMotor"/> to see the full calculation.
         /// </remarks>
         [KSPField(isPersistant = true, guiActive = true, guiActiveEditor = true, guiName = "Torque", guiFormat = "N1")]
-        [UI_FloatEdit(minValue = 1, maxValue = 11f, incrementSmall = 0.5f, incrementLarge = 1f, incrementSlide = 0.5f, scene = UI_Scene.All, sigFigs = 1)]
-        public float Torque = 1;
+        [UI_FloatEdit(minValue = 1, maxValue = 11.0f, incrementSmall = 0.5f, incrementLarge = 1.0f, incrementSlide = 0.5f, scene = UI_Scene.All, sigFigs = 1)]
+        public float Torque = 1.0f;
 
         /// <summary>
         /// Denotes whether the joint is rotating in the forward or reverse direction.
@@ -244,7 +242,7 @@ namespace BlessedRobotics.PartModules
         protected void DirectionToggle(bool isInverted)
         {
             if (GameSettings.VERBOSE_DEBUG_LOG)
-                Debug.Log("[Blessed] Rotator.DirectionToggle: Servo direction is " + (isInverted ? " reversed." : " normal."));
+                Debug.Log("[Konstruction] Rotator.DirectionToggle: Servo direction is " + (isInverted ? " reversed." : " normal."));
 
             IsInverted = isInverted;
             Events["DirectionToggleEvent"].guiName = (IsInverted ? "Forward" : "Reverse");
@@ -257,7 +255,7 @@ namespace BlessedRobotics.PartModules
         protected void StartStopToggle(bool isRunning)
         {
             if (GameSettings.VERBOSE_DEBUG_LOG)
-                Debug.Log("[Blessed] Rotator.StartStopToggle: Servo is " + (isRunning ? "" : "not ") + "running.");
+                Debug.Log("[Konstruction] Rotator.StartStopToggle: Servo is " + (isRunning ? "" : "not ") + "running.");
 
             IsRunning = isRunning;
             Events["StartStopToggleEvent"].guiName = (IsRunning ? "Stop" : "Start");
@@ -272,7 +270,7 @@ namespace BlessedRobotics.PartModules
         public void VesselOnRails(Vessel v)
         {
             if (GameSettings.VERBOSE_DEBUG_LOG)
-                Debug.Log("[Blessed] Rotator.VesselOnRails called.");
+                Debug.Log("[Konstruction] Rotator.VesselOnRails called.");
 
             // If for some reason the Vessel param doesn't match this vessel, then return
             if (v != this.vessel)
@@ -299,7 +297,7 @@ namespace BlessedRobotics.PartModules
         public void VesselOffRails(Vessel v)
         {
             if (GameSettings.VERBOSE_DEBUG_LOG)
-                Debug.Log("[Blessed] Rotator.VesselOffRails called.");
+                Debug.Log("[Konstruction] Rotator.VesselOffRails called.");
 
             // If for some reason the Vessel param doesn't match this vessel, then return
             if (v != this.vessel)
@@ -318,7 +316,7 @@ namespace BlessedRobotics.PartModules
             base.OnAwake();
 
             if (GameSettings.VERBOSE_DEBUG_LOG)
-                Debug.Log("[Blessed] Rotator.OnAwake called.");
+                Debug.Log("[Konstruction] Rotator.OnAwake called.");
 
             // Register listeners for OnRails/OffRails events
             GameEvents.onVesselGoOnRails.Add(VesselOnRails);
@@ -334,7 +332,7 @@ namespace BlessedRobotics.PartModules
             base.OnLoad(node);
 
             if (GameSettings.VERBOSE_DEBUG_LOG)
-                Debug.Log("[Blessed] Rotator.OnLoad called.");
+                Debug.Log("[Konstruction] Rotator.OnLoad called.");
         }
 
         /// <summary>
@@ -346,7 +344,7 @@ namespace BlessedRobotics.PartModules
             base.OnStart(state);
 
             if (GameSettings.VERBOSE_DEBUG_LOG)
-                Debug.Log("[Blessed] Rotator.OnStart called.");
+                Debug.Log("[Konstruction] Rotator.OnStart called.");
 
             // Make sure the text for gui events is set correctly
             DirectionToggle(IsInverted);
@@ -362,8 +360,8 @@ namespace BlessedRobotics.PartModules
                 {
                     if (GameSettings.VERBOSE_DEBUG_LOG)
                     {
-                        Debug.Log("[Blessed] Rotator.OnStart: Found fixed mesh!");
-                        Debug.Log("[Blessed] Rotator.OnStart: Found movable mesh!");
+                        Debug.Log("[Konstruction] Rotator.OnStart: Found fixed mesh!");
+                        Debug.Log("[Konstruction] Rotator.OnStart: Found movable mesh!");
                     }
 
                     // Give our FixedMesh its own Rigidbody
@@ -384,6 +382,8 @@ namespace BlessedRobotics.PartModules
                     _rotatorJoint.axis = new Vector3(RotationAxisX, RotationAxisY, RotationAxisZ);
                     _rotatorJoint.autoConfigureConnectedAnchor = true;
                     _rotatorJoint.useMotor = true;
+                    _rotatorJoint.breakForce = float.PositiveInfinity;
+                    _rotatorJoint.breakTorque = float.PositiveInfinity;
 
                     // Setup the motor on the joint
                     UpdateMotor();
@@ -393,7 +393,7 @@ namespace BlessedRobotics.PartModules
             }
             catch (Exception ex)
             {
-                Debug.LogError("[Blessed] Rotator.OnStart encountered an error: " + ex.Message);
+                Debug.LogError("[Konstruction] Rotator.OnStart encountered an error: " + ex.Message);
             }
         }
 
@@ -413,9 +413,10 @@ namespace BlessedRobotics.PartModules
                 if (_fixedMesh != null && rootRigidbody != null)
                 {
                     if (GameSettings.VERBOSE_DEBUG_LOG)
-                        Debug.Log("[Blessed] Rotator.OnStartFinished: Found root Rigidbody!");
+                        Debug.Log("[Konstruction] Rotator.OnStartFinished: Found root Rigidbody!");
 
                     // Create a joint to "lock" our FixedMesh in place
+                    // TODO: Change this to FixedJoint?
                     HingeJoint joint = _fixedMesh.gameObject.AddComponent<HingeJoint>();
 
                     // Mate the joint to the root part's Rigidbody
@@ -438,7 +439,7 @@ namespace BlessedRobotics.PartModules
             }
             catch (Exception ex)
             {
-                Debug.LogError("[Blessed] Rotator.OnStartFinished encountered an error: " + ex.Message);
+                Debug.LogError("[Konstruction] Rotator.OnStartFinished encountered an error: " + ex.Message);
             }
         }
 
@@ -457,6 +458,7 @@ namespace BlessedRobotics.PartModules
                 // Update the joint's motor with current speed and torque values
                 UpdateMotor();
 
+                // TODO: Move this to OnStartFinished??
                 // If this part has a child part attached via an AttachNode, it will be connected to this part's root Transform
                 // by default. We want it to be attached to our movable mesh instead so that the child part will move with it.
                 // We can't do this in OnStart unfortunately because our children likely won't have their attach node/ConfigurableJoint
@@ -464,7 +466,7 @@ namespace BlessedRobotics.PartModules
                 if (!_isChildConnected && _attachChildTimeout > 0 && part.children.Count > 0)
                 {
                     if (GameSettings.VERBOSE_DEBUG_LOG)
-                        Debug.Log("[Blessed] Rotator.OnUpdate: Looking for child attach nodes.");
+                        Debug.Log("[Konstruction] Rotator.OnUpdate: Looking for child attach nodes.");
 
                     _attachChildTimeout--;
 
@@ -496,7 +498,7 @@ namespace BlessedRobotics.PartModules
             base.OnSave(node);
 
             if (GameSettings.VERBOSE_DEBUG_LOG)
-                Debug.Log("[Blessed] Rotator.OnSave called.");
+                Debug.Log("[Konstruction] Rotator.OnSave called.");
         }
 
         // Not sure when this gets called, maybe when you switch vessels?
@@ -505,7 +507,7 @@ namespace BlessedRobotics.PartModules
             base.OnActive();
 
             if (GameSettings.VERBOSE_DEBUG_LOG)
-                Debug.Log("[Blessed] Rotator.OnActive called.");
+                Debug.Log("[Konstruction] Rotator.OnActive called.");
         }
 
         // Not sure when this gets called, maybe when you switch vessels?
@@ -514,7 +516,7 @@ namespace BlessedRobotics.PartModules
             base.OnInactive();
 
             if (GameSettings.VERBOSE_DEBUG_LOG)
-                Debug.Log("[Blessed] Rotator.OnInactive called.");
+                Debug.Log("[Konstruction] Rotator.OnInactive called.");
         }
         #endregion
 
@@ -540,7 +542,7 @@ namespace BlessedRobotics.PartModules
             }
             catch (Exception ex)
             {
-                Debug.LogError("[Blessed] Rotator.UpdateMotor encountered an error: " + ex.Message);
+                Debug.LogError("[Konstruction] Rotator.UpdateMotor encountered an error: " + ex.Message);
             }
         }
 
@@ -565,7 +567,7 @@ namespace BlessedRobotics.PartModules
             }
             catch (Exception ex)
             {
-                Debug.LogError("[Blessed] Rotator.ReattachChild encountered an error: " + ex.Message);
+                Debug.LogError("[Konstruction] Rotator.ReattachChild encountered an error: " + ex.Message);
             }
         }
         #endregion
